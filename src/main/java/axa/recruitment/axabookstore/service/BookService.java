@@ -19,6 +19,6 @@ public interface BookService {
     
     List<Book> findByContext(String context, String keyword);
     
-    List<Book> findByPrice(BigDecimal min, BigDecimal max);
+    List<Book> findByPrice(String context, BigDecimal min, BigDecimal max);
     
 }

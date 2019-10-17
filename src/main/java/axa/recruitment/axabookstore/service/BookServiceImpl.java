@@ -4,7 +4,12 @@ import axa.recruitment.axabookstore.model.Book;
 import axa.recruitment.axabookstore.repository.BookRepository;
 import java.math.BigDecimal;
 import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,13 +34,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findByContext(String context, String keyword) {
-        return repo.findByContext(keyword, context);
+    public List<Book> findByContext(String columnName, String keyword) {
+        return repo.findAll(stringByColumnNameAndValue(columnName, keyword));
     }
 
     @Override
-    public List<Book> findByPrice(BigDecimal min, BigDecimal max) {
-        return repo.findByPrice(min, max);
+    public List<Book> findByPrice(String columnName, BigDecimal min, BigDecimal max) {
+        return repo.findAll(priceByColumnNameAndValue(columnName, min, max));
     }
 
     @Override
@@ -51,6 +56,26 @@ public class BookServiceImpl implements BookService {
             return true;
         }
         return false;
+    }
+
+    public static Specification<Book> stringByColumnNameAndValue(String columnName, String value) {
+        return new Specification<Book>() {
+            @Override
+            public Predicate toPredicate(Root<Book> root,
+                    CriteriaQuery<?> query, CriteriaBuilder builder) {
+                return builder.like(builder.lower(root.<String>get(columnName)), "%" + value.toLowerCase() + "%");
+            }
+        };
+    }
+    
+    public static Specification<Book> priceByColumnNameAndValue(String columnName, BigDecimal min, BigDecimal max) {
+        return new Specification<Book>() {
+            @Override
+            public Predicate toPredicate(Root<Book> root,
+                    CriteriaQuery<?> query, CriteriaBuilder builder) {
+                return builder.between(root.<BigDecimal>get(columnName), min, max);
+            }
+        };
     }
 
 }
