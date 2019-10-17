@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/book/manage")
 public class BookManagementController {
 
     @Autowired
@@ -24,7 +26,7 @@ public class BookManagementController {
         this.service = service;
     }
 
-    @PostMapping("/api/book/manage/add")
+    @PostMapping("/add")
     public ResponseEntity<Response> newBookEntry(Book book) {
         String nameofCurrMethod = new Throwable()
                 .getStackTrace()[0]
@@ -41,7 +43,7 @@ public class BookManagementController {
                 .body(response);
     }
 
-    @PutMapping("/api/book/manage/update/{isbn}")
+    @PutMapping("/update/{isbn}")
     public ResponseEntity<Response> updateBookInfo(
             @RequestBody Book book,
             @PathVariable(name = "isbn") String isbn
@@ -64,7 +66,7 @@ public class BookManagementController {
                 .body(response);
     }
     
-    @DeleteMapping("/api/book/manage/delete/{isbn}")
+    @DeleteMapping("/delete/{isbn}")
     public ResponseEntity<Response> deleteBook(@PathVariable(name = "isbn") String isbn) {
         String message = "The book to be deleted is not found";
         if (service.delete(isbn)) {
